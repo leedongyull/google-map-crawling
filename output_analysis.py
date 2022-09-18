@@ -19,12 +19,17 @@ entire_name = get_input_data('한국행정구역')
 num = 0
 for i, x in enumerate(entire_name):
     detail_name = get_input_data(x)
-    
     for j, y in enumerate(detail_name):
         url = f'./output/{x}/{x}_{y}.csv'
+        print(url)
         df = pd.read_csv(url)
+        df[3] = 0
+        df[4] = 0
 
-        geo_data = []
         for k in range(14):
-            geo_data.append(geocoding(df.iloc[k, 1]))
-        pd.Series(geo_data).to_csv(f'./output/{x}/geo/geo_{x}_{y}.csv')
+            value = geocoding(df.iloc[k, 1])
+            df.loc[k, 3] = value[0]
+            df.loc[k, 4] = value[1]
+
+        df.columns = ['index', 'name', 'address', 'description', 'latitude', 'longitude']
+        df.to_csv(f'./output/{x}/{x}_{y}.csv', index=False)
